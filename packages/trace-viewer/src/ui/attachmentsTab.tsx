@@ -20,8 +20,54 @@ import { ImageDiffView } from '@web/shared/imageDiffView';
 import type { MultiTraceModel } from './modelUtil';
 import { PlaceholderPanel } from './placeholderPanel';
 import type { AfterActionTraceEventAttachment } from '@trace/trace';
+import { CodeMirrorWrapper } from '@web/components/codeMirrorWrapper';
+import { isTextualMimeType } from '@isomorphic/mimeType';
+import { Expandable } from '@web/components/expandable';
 
 type Attachment = AfterActionTraceEventAttachment & { traceUrl: string };
+
+type ExpandableAttachmentProps = {
+  attachment: Attachment;
+};
+
+const ExpandableAttachment: React.FunctionComponent<ExpandableAttachmentProps> = ({ attachment }) => {
+  const [expanded, setExpanded] = React.useState(false);
+  const [attachmentText, setAttachmentText] = React.useState<string | null>(null);
+  const [placeholder, setPlaceholder] = React.useState<string | null>(null);
+
+  const isTextAttachment = isTextualMimeType(attachment.contentType);
+
+  React.useEffect(() => {
+    if (expanded && attachmentText === null && placeholder === null) {
+      setPlaceholder('Loading ...');
+      fetch(attachmentURL(attachment)).then(response => response.text()).then(text => {
+        setAttachmentText(text);
+        setPlaceholder(null);
+      }).catch(e => {
+        setPlaceholder('Failed to load: ' + e.message);
+      });
+    }
+  }, [expanded, attachmentText, placeholder, attachment]);
+
+  const title = <>
+    {attachment.name} <a style={{ marginLeft: 5 }} href={attachmentURL(attachment) + '&download'}>download</a>
+  </>;
+
+  if (!isTextAttachment)
+    return <div style={{ marginLeft: 20 }}>{title}</div>;
+
+  return <>
+    <Expandable title={title} expanded={expanded} setExpanded={setExpanded} expandOnTitleClick={true}>
+      {placeholder && <i>{placeholder}</i>}
+    </Expandable>
+    {expanded && attachmentText !== null && <CodeMirrorWrapper
+      text={attachmentText}
+      readOnly
+      lineNumbers={true}
+      wrapLines={false}>
+    </CodeMirrorWrapper>}
+  </>;
+};
 
 export const AttachmentsTab: React.FunctionComponent<{
   model: MultiTraceModel | undefined,
@@ -82,7 +128,7 @@ export const AttachmentsTab: React.FunctionComponent<{
     {attachments.size ? <div className='attachments-section'>Attachments</div> : undefined}
     {[...attachments.values()].map((a, i) => {
       return <div className='attachment-item' key={`attachment-${i}`}>
-        <a href={attachmentURL(a) + '&download'}>{a.name}</a>
+        <ExpandableAttachment attachment={a} />
       </div>;
     })}
   </div>;

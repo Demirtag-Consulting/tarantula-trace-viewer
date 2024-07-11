@@ -14352,6 +14352,7 @@ export type AndroidKey =
   'Star' | 'Pound' | '*' | '#' |
   'DialUp' | 'DialDown' | 'DialLeft' | 'DialRight' | 'DialCenter' |
   'VolumeUp' | 'VolumeDown' |
+  'ChannelUp' | 'ChannelDown' |
   'Power' |
   'Camera' |
   'Clear' |
@@ -18707,8 +18708,8 @@ export interface Mouse {
    * Shortcut for [mouse.move(x, y[, options])](https://playwright.dev/docs/api/class-mouse#mouse-move),
    * [mouse.down([options])](https://playwright.dev/docs/api/class-mouse#mouse-down),
    * [mouse.up([options])](https://playwright.dev/docs/api/class-mouse#mouse-up).
-   * @param x
-   * @param y
+   * @param x X coordinate relative to the main frame's viewport in CSS pixels.
+   * @param y Y coordinate relative to the main frame's viewport in CSS pixels.
    * @param options
    */
   click(x: number, y: number, options?: {
@@ -18734,8 +18735,8 @@ export interface Mouse {
    * [mouse.up([options])](https://playwright.dev/docs/api/class-mouse#mouse-up),
    * [mouse.down([options])](https://playwright.dev/docs/api/class-mouse#mouse-down) and
    * [mouse.up([options])](https://playwright.dev/docs/api/class-mouse#mouse-up).
-   * @param x
-   * @param y
+   * @param x X coordinate relative to the main frame's viewport in CSS pixels.
+   * @param y Y coordinate relative to the main frame's viewport in CSS pixels.
    * @param options
    */
   dblclick(x: number, y: number, options?: {
@@ -18768,8 +18769,8 @@ export interface Mouse {
 
   /**
    * Dispatches a `mousemove` event.
-   * @param x
-   * @param y
+   * @param x X coordinate relative to the main frame's viewport in CSS pixels.
+   * @param y Y coordinate relative to the main frame's viewport in CSS pixels.
    * @param options
    */
   move(x: number, y: number, options?: {
@@ -19678,8 +19679,8 @@ export interface Touchscreen {
    *
    * **NOTE** [page.tap(selector[, options])](https://playwright.dev/docs/api/class-page#page-tap) the method will throw
    * if `hasTouch` option of the browser context is false.
-   * @param x
-   * @param y
+   * @param x X coordinate relative to the main frame's viewport in CSS pixels.
+   * @param y Y coordinate relative to the main frame's viewport in CSS pixels.
    */
   tap(x: number, y: number): Promise<void>;
 
@@ -21106,6 +21107,14 @@ type Devices = {
   "iPhone 14 Pro landscape": DeviceDescriptor;
   "iPhone 14 Pro Max": DeviceDescriptor;
   "iPhone 14 Pro Max landscape": DeviceDescriptor;
+  "iPhone 15": DeviceDescriptor;
+  "iPhone 15 landscape": DeviceDescriptor;
+  "iPhone 15 Plus": DeviceDescriptor;
+  "iPhone 15 Plus landscape": DeviceDescriptor;
+  "iPhone 15 Pro": DeviceDescriptor;
+  "iPhone 15 Pro landscape": DeviceDescriptor;
+  "iPhone 15 Pro Max": DeviceDescriptor;
+  "iPhone 15 Pro Max landscape": DeviceDescriptor;
   "Kindle Fire HDX": DeviceDescriptor;
   "Kindle Fire HDX landscape": DeviceDescriptor;
   "LG Optimus L70": DeviceDescriptor;
