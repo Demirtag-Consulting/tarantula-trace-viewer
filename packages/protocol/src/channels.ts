@@ -177,6 +177,11 @@ export type SerializedValue = {
   d?: string,
   u?: string,
   bi?: string,
+  e?: {
+    m: string,
+    n: string,
+    s: string,
+  },
   r?: {
     p: string,
     f: string,
@@ -576,6 +581,15 @@ export type PlaywrightNewRequestParams = {
   userAgent?: string,
   ignoreHTTPSErrors?: boolean,
   extraHTTPHeaders?: NameValue[],
+  clientCertificates?: {
+    url: string,
+    certs: {
+      cert?: Binary,
+      key?: Binary,
+      passphrase?: string,
+      pfx?: Binary,
+    }[],
+  }[],
   httpCredentials?: {
     username: string,
     password: string,
@@ -600,6 +614,15 @@ export type PlaywrightNewRequestOptions = {
   userAgent?: string,
   ignoreHTTPSErrors?: boolean,
   extraHTTPHeaders?: NameValue[],
+  clientCertificates?: {
+    url: string,
+    certs: {
+      cert?: Binary,
+      key?: Binary,
+      passphrase?: string,
+      pfx?: Binary,
+    }[],
+  }[],
   httpCredentials?: {
     username: string,
     password: string,
@@ -944,6 +967,15 @@ export type BrowserTypeLaunchPersistentContextParams = {
     height: number,
   },
   ignoreHTTPSErrors?: boolean,
+  clientCertificates?: {
+    url: string,
+    certs: {
+      cert?: Binary,
+      key?: Binary,
+      passphrase?: string,
+      pfx?: Binary,
+    }[],
+  }[],
   javaScriptEnabled?: boolean,
   bypassCSP?: boolean,
   userAgent?: string,
@@ -1017,6 +1049,15 @@ export type BrowserTypeLaunchPersistentContextOptions = {
     height: number,
   },
   ignoreHTTPSErrors?: boolean,
+  clientCertificates?: {
+    url: string,
+    certs: {
+      cert?: Binary,
+      key?: Binary,
+      passphrase?: string,
+      pfx?: Binary,
+    }[],
+  }[],
   javaScriptEnabled?: boolean,
   bypassCSP?: boolean,
   userAgent?: string,
@@ -1084,12 +1125,10 @@ export type BrowserInitializer = {
   name: string,
 };
 export interface BrowserEventTarget {
-  on(event: 'beforeClose', callback: (params: BrowserBeforeCloseEvent) => void): this;
   on(event: 'close', callback: (params: BrowserCloseEvent) => void): this;
 }
 export interface BrowserChannel extends BrowserEventTarget, Channel {
   _type_Browser: boolean;
-  beforeCloseFinished(params?: BrowserBeforeCloseFinishedParams, metadata?: CallMetadata): Promise<BrowserBeforeCloseFinishedResult>;
   close(params: BrowserCloseParams, metadata?: CallMetadata): Promise<BrowserCloseResult>;
   killForTests(params?: BrowserKillForTestsParams, metadata?: CallMetadata): Promise<BrowserKillForTestsResult>;
   defaultUserAgentForTest(params?: BrowserDefaultUserAgentForTestParams, metadata?: CallMetadata): Promise<BrowserDefaultUserAgentForTestResult>;
@@ -1100,11 +1139,7 @@ export interface BrowserChannel extends BrowserEventTarget, Channel {
   startTracing(params: BrowserStartTracingParams, metadata?: CallMetadata): Promise<BrowserStartTracingResult>;
   stopTracing(params?: BrowserStopTracingParams, metadata?: CallMetadata): Promise<BrowserStopTracingResult>;
 }
-export type BrowserBeforeCloseEvent = {};
 export type BrowserCloseEvent = {};
-export type BrowserBeforeCloseFinishedParams = {};
-export type BrowserBeforeCloseFinishedOptions = {};
-export type BrowserBeforeCloseFinishedResult = void;
 export type BrowserCloseParams = {
   reason?: string,
 };
@@ -1131,6 +1166,15 @@ export type BrowserNewContextParams = {
     height: number,
   },
   ignoreHTTPSErrors?: boolean,
+  clientCertificates?: {
+    url: string,
+    certs: {
+      cert?: Binary,
+      key?: Binary,
+      passphrase?: string,
+      pfx?: Binary,
+    }[],
+  }[],
   javaScriptEnabled?: boolean,
   bypassCSP?: boolean,
   userAgent?: string,
@@ -1190,6 +1234,15 @@ export type BrowserNewContextOptions = {
     height: number,
   },
   ignoreHTTPSErrors?: boolean,
+  clientCertificates?: {
+    url: string,
+    certs: {
+      cert?: Binary,
+      key?: Binary,
+      passphrase?: string,
+      pfx?: Binary,
+    }[],
+  }[],
   javaScriptEnabled?: boolean,
   bypassCSP?: boolean,
   userAgent?: string,
@@ -1252,6 +1305,15 @@ export type BrowserNewContextForReuseParams = {
     height: number,
   },
   ignoreHTTPSErrors?: boolean,
+  clientCertificates?: {
+    url: string,
+    certs: {
+      cert?: Binary,
+      key?: Binary,
+      passphrase?: string,
+      pfx?: Binary,
+    }[],
+  }[],
   javaScriptEnabled?: boolean,
   bypassCSP?: boolean,
   userAgent?: string,
@@ -1311,6 +1373,15 @@ export type BrowserNewContextForReuseOptions = {
     height: number,
   },
   ignoreHTTPSErrors?: boolean,
+  clientCertificates?: {
+    url: string,
+    certs: {
+      cert?: Binary,
+      key?: Binary,
+      passphrase?: string,
+      pfx?: Binary,
+    }[],
+  }[],
   javaScriptEnabled?: boolean,
   bypassCSP?: boolean,
   userAgent?: string,
@@ -1392,7 +1463,6 @@ export type BrowserStopTracingResult = {
 };
 
 export interface BrowserEvents {
-  'beforeClose': BrowserBeforeCloseEvent;
   'close': BrowserCloseEvent;
 }
 
@@ -2541,7 +2611,6 @@ export type FrameCheckParams = {
   selector: string,
   strict?: boolean,
   force?: boolean,
-  noWaitAfter?: boolean,
   position?: Point,
   timeout?: number,
   trial?: boolean,
@@ -2549,7 +2618,6 @@ export type FrameCheckParams = {
 export type FrameCheckOptions = {
   strict?: boolean,
   force?: boolean,
-  noWaitAfter?: boolean,
   position?: Point,
   timeout?: number,
   trial?: boolean,
@@ -2590,7 +2658,6 @@ export type FrameDragAndDropParams = {
   source: string,
   target: string,
   force?: boolean,
-  noWaitAfter?: boolean,
   timeout?: number,
   trial?: boolean,
   sourcePosition?: Point,
@@ -2599,7 +2666,6 @@ export type FrameDragAndDropParams = {
 };
 export type FrameDragAndDropOptions = {
   force?: boolean,
-  noWaitAfter?: boolean,
   timeout?: number,
   trial?: boolean,
   sourcePosition?: Point,
@@ -2611,7 +2677,6 @@ export type FrameDblclickParams = {
   selector: string,
   strict?: boolean,
   force?: boolean,
-  noWaitAfter?: boolean,
   modifiers?: ('Alt' | 'Control' | 'ControlOrMeta' | 'Meta' | 'Shift')[],
   position?: Point,
   delay?: number,
@@ -2622,7 +2687,6 @@ export type FrameDblclickParams = {
 export type FrameDblclickOptions = {
   strict?: boolean,
   force?: boolean,
-  noWaitAfter?: boolean,
   modifiers?: ('Alt' | 'Control' | 'ControlOrMeta' | 'Meta' | 'Shift')[],
   position?: Point,
   delay?: number,
@@ -2671,13 +2735,11 @@ export type FrameFillParams = {
   value: string,
   force?: boolean,
   timeout?: number,
-  noWaitAfter?: boolean,
 };
 export type FrameFillOptions = {
   strict?: boolean,
   force?: boolean,
   timeout?: number,
-  noWaitAfter?: boolean,
 };
 export type FrameFillResult = void;
 export type FrameFocusParams = {
@@ -2737,7 +2799,6 @@ export type FrameHoverParams = {
   position?: Point,
   timeout?: number,
   trial?: boolean,
-  noWaitAfter?: boolean,
 };
 export type FrameHoverOptions = {
   strict?: boolean,
@@ -2746,7 +2807,6 @@ export type FrameHoverOptions = {
   position?: Point,
   timeout?: number,
   trial?: boolean,
-  noWaitAfter?: boolean,
 };
 export type FrameHoverResult = void;
 export type FrameInnerHTMLParams = {
@@ -2949,7 +3009,6 @@ export type FrameSetInputFilesParams = {
   localPaths?: string[],
   streams?: WritableStreamChannel[],
   timeout?: number,
-  noWaitAfter?: boolean,
 };
 export type FrameSetInputFilesOptions = {
   strict?: boolean,
@@ -2963,14 +3022,12 @@ export type FrameSetInputFilesOptions = {
   localPaths?: string[],
   streams?: WritableStreamChannel[],
   timeout?: number,
-  noWaitAfter?: boolean,
 };
 export type FrameSetInputFilesResult = void;
 export type FrameTapParams = {
   selector: string,
   strict?: boolean,
   force?: boolean,
-  noWaitAfter?: boolean,
   modifiers?: ('Alt' | 'Control' | 'ControlOrMeta' | 'Meta' | 'Shift')[],
   position?: Point,
   timeout?: number,
@@ -2979,7 +3036,6 @@ export type FrameTapParams = {
 export type FrameTapOptions = {
   strict?: boolean,
   force?: boolean,
-  noWaitAfter?: boolean,
   modifiers?: ('Alt' | 'Control' | 'ControlOrMeta' | 'Meta' | 'Shift')[],
   position?: Point,
   timeout?: number,
@@ -3008,13 +3064,11 @@ export type FrameTypeParams = {
   strict?: boolean,
   text: string,
   delay?: number,
-  noWaitAfter?: boolean,
   timeout?: number,
 };
 export type FrameTypeOptions = {
   strict?: boolean,
   delay?: number,
-  noWaitAfter?: boolean,
   timeout?: number,
 };
 export type FrameTypeResult = void;
@@ -3022,7 +3076,6 @@ export type FrameUncheckParams = {
   selector: string,
   strict?: boolean,
   force?: boolean,
-  noWaitAfter?: boolean,
   position?: Point,
   timeout?: number,
   trial?: boolean,
@@ -3030,7 +3083,6 @@ export type FrameUncheckParams = {
 export type FrameUncheckOptions = {
   strict?: boolean,
   force?: boolean,
-  noWaitAfter?: boolean,
   position?: Point,
   timeout?: number,
   trial?: boolean,
@@ -3298,14 +3350,12 @@ export type ElementHandleBoundingBoxResult = {
 };
 export type ElementHandleCheckParams = {
   force?: boolean,
-  noWaitAfter?: boolean,
   position?: Point,
   timeout?: number,
   trial?: boolean,
 };
 export type ElementHandleCheckOptions = {
   force?: boolean,
-  noWaitAfter?: boolean,
   position?: Point,
   timeout?: number,
   trial?: boolean,
@@ -3341,7 +3391,6 @@ export type ElementHandleContentFrameResult = {
 };
 export type ElementHandleDblclickParams = {
   force?: boolean,
-  noWaitAfter?: boolean,
   modifiers?: ('Alt' | 'Control' | 'ControlOrMeta' | 'Meta' | 'Shift')[],
   position?: Point,
   delay?: number,
@@ -3351,7 +3400,6 @@ export type ElementHandleDblclickParams = {
 };
 export type ElementHandleDblclickOptions = {
   force?: boolean,
-  noWaitAfter?: boolean,
   modifiers?: ('Alt' | 'Control' | 'ControlOrMeta' | 'Meta' | 'Shift')[],
   position?: Point,
   delay?: number,
@@ -3372,12 +3420,10 @@ export type ElementHandleFillParams = {
   value: string,
   force?: boolean,
   timeout?: number,
-  noWaitAfter?: boolean,
 };
 export type ElementHandleFillOptions = {
   force?: boolean,
   timeout?: number,
-  noWaitAfter?: boolean,
 };
 export type ElementHandleFillResult = void;
 export type ElementHandleFocusParams = {};
@@ -3398,7 +3444,6 @@ export type ElementHandleHoverParams = {
   position?: Point,
   timeout?: number,
   trial?: boolean,
-  noWaitAfter?: boolean,
 };
 export type ElementHandleHoverOptions = {
   force?: boolean,
@@ -3406,7 +3451,6 @@ export type ElementHandleHoverOptions = {
   position?: Point,
   timeout?: number,
   trial?: boolean,
-  noWaitAfter?: boolean,
 };
 export type ElementHandleHoverResult = void;
 export type ElementHandleInnerHTMLParams = {};
@@ -3577,7 +3621,6 @@ export type ElementHandleSetInputFilesParams = {
   localPaths?: string[],
   streams?: WritableStreamChannel[],
   timeout?: number,
-  noWaitAfter?: boolean,
 };
 export type ElementHandleSetInputFilesOptions = {
   payloads?: {
@@ -3590,12 +3633,10 @@ export type ElementHandleSetInputFilesOptions = {
   localPaths?: string[],
   streams?: WritableStreamChannel[],
   timeout?: number,
-  noWaitAfter?: boolean,
 };
 export type ElementHandleSetInputFilesResult = void;
 export type ElementHandleTapParams = {
   force?: boolean,
-  noWaitAfter?: boolean,
   modifiers?: ('Alt' | 'Control' | 'ControlOrMeta' | 'Meta' | 'Shift')[],
   position?: Point,
   timeout?: number,
@@ -3603,7 +3644,6 @@ export type ElementHandleTapParams = {
 };
 export type ElementHandleTapOptions = {
   force?: boolean,
-  noWaitAfter?: boolean,
   modifiers?: ('Alt' | 'Control' | 'ControlOrMeta' | 'Meta' | 'Shift')[],
   position?: Point,
   timeout?: number,
@@ -3618,25 +3658,21 @@ export type ElementHandleTextContentResult = {
 export type ElementHandleTypeParams = {
   text: string,
   delay?: number,
-  noWaitAfter?: boolean,
   timeout?: number,
 };
 export type ElementHandleTypeOptions = {
   delay?: number,
-  noWaitAfter?: boolean,
   timeout?: number,
 };
 export type ElementHandleTypeResult = void;
 export type ElementHandleUncheckParams = {
   force?: boolean,
-  noWaitAfter?: boolean,
   position?: Point,
   timeout?: number,
   trial?: boolean,
 };
 export type ElementHandleUncheckOptions = {
   force?: boolean,
-  noWaitAfter?: boolean,
   position?: Point,
   timeout?: number,
   trial?: boolean,
@@ -4558,6 +4594,15 @@ export type AndroidDeviceLaunchBrowserParams = {
     height: number,
   },
   ignoreHTTPSErrors?: boolean,
+  clientCertificates?: {
+    url: string,
+    certs: {
+      cert?: Binary,
+      key?: Binary,
+      passphrase?: string,
+      pfx?: Binary,
+    }[],
+  }[],
   javaScriptEnabled?: boolean,
   bypassCSP?: boolean,
   userAgent?: string,
@@ -4615,6 +4660,15 @@ export type AndroidDeviceLaunchBrowserOptions = {
     height: number,
   },
   ignoreHTTPSErrors?: boolean,
+  clientCertificates?: {
+    url: string,
+    certs: {
+      cert?: Binary,
+      key?: Binary,
+      passphrase?: string,
+      pfx?: Binary,
+    }[],
+  }[],
   javaScriptEnabled?: boolean,
   bypassCSP?: boolean,
   userAgent?: string,

@@ -1939,7 +1939,6 @@ export interface Page {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to click in the center of the
    *    element.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    * 1. Ensure that the element is now checked. If not, this method throws.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
@@ -1955,9 +1954,8 @@ export interface Page {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -2043,6 +2041,7 @@ export interface Page {
      * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
      * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
      * navigating to inaccessible pages. Defaults to `false`.
+     * @deprecated This option will default to `true` in the future.
      */
     noWaitAfter?: boolean;
 
@@ -2121,8 +2120,6 @@ export interface Page {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to double click in the center of the
    *    element, or the specified `position`.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set. Note that if
-   *    the first click of the `dblclick()` triggers a navigation event, this method will throw.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
    * TimeoutError}. Passing zero timeout disables this.
@@ -2156,9 +2153,8 @@ export interface Page {
     modifiers?: Array<"Alt"|"Control"|"ControlOrMeta"|"Meta"|"Shift">;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -2281,9 +2277,8 @@ export interface Page {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -2464,9 +2459,8 @@ export interface Page {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -3025,7 +3019,6 @@ export interface Page {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to hover over the center of the
    *    element, or the specified `position`.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
    * TimeoutError}. Passing zero timeout disables this.
@@ -3047,9 +3040,8 @@ export interface Page {
     modifiers?: Array<"Alt"|"Control"|"ControlOrMeta"|"Meta"|"Shift">;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -3604,6 +3596,7 @@ export interface Page {
      * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
      * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
      * navigating to inaccessible pages. Defaults to `false`.
+     * @deprecated This option will default to `true` in the future.
      */
     noWaitAfter?: boolean;
 
@@ -3862,6 +3855,7 @@ export interface Page {
      * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
      * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
      * navigating to inaccessible pages. Defaults to `false`.
+     * @deprecated This option will default to `true` in the future.
      */
     noWaitAfter?: boolean;
 
@@ -3894,7 +3888,6 @@ export interface Page {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to click in the center of the
    *    element.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    * 1. Ensure that the element is now checked or unchecked. If not, this method throws.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
@@ -3911,9 +3904,8 @@ export interface Page {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -4069,9 +4061,8 @@ export interface Page {
     buffer: Buffer;
   }>, options?: {
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -4139,7 +4130,6 @@ export interface Page {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.touchscreen](https://playwright.dev/docs/api/class-page#page-touchscreen) to tap the center of the
    *    element, or the specified `position`.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
    * TimeoutError}. Passing zero timeout disables this.
@@ -4164,9 +4154,8 @@ export interface Page {
     modifiers?: Array<"Alt"|"Control"|"ControlOrMeta"|"Meta"|"Shift">;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -4257,9 +4246,8 @@ export interface Page {
     delay?: number;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -4291,7 +4279,6 @@ export interface Page {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to click in the center of the
    *    element.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    * 1. Ensure that the element is now unchecked. If not, this method throws.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
@@ -4307,9 +4294,8 @@ export interface Page {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -5644,7 +5630,6 @@ export interface Frame {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to click in the center of the
    *    element.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    * 1. Ensure that the element is now checked. If not, this method throws.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
@@ -5660,9 +5645,8 @@ export interface Frame {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -5750,6 +5734,7 @@ export interface Frame {
      * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
      * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
      * navigating to inaccessible pages. Defaults to `false`.
+     * @deprecated This option will default to `true` in the future.
      */
     noWaitAfter?: boolean;
 
@@ -5799,9 +5784,8 @@ export interface Frame {
    *    the element is detached during the checks, the whole action is retried.
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to double click in the center of the
-   *    element, or the specified `position`.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set. Note that if
-   *    the first click of the `dblclick()` triggers a navigation event, this method will throw.
+   *    element, or the specified `position`. if the first click of the `dblclick()` triggers a navigation event,
+   *    this method will throw.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
    * TimeoutError}. Passing zero timeout disables this.
@@ -5835,9 +5819,8 @@ export interface Frame {
     modifiers?: Array<"Alt"|"Control"|"ControlOrMeta"|"Meta"|"Shift">;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -5946,9 +5929,8 @@ export interface Frame {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -6020,9 +6002,8 @@ export interface Frame {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -6507,7 +6488,6 @@ export interface Frame {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to hover over the center of the
    *    element, or the specified `position`.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
    * TimeoutError}. Passing zero timeout disables this.
@@ -6529,9 +6509,8 @@ export interface Frame {
     modifiers?: Array<"Alt"|"Control"|"ControlOrMeta"|"Meta"|"Shift">;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -6907,6 +6886,7 @@ export interface Frame {
      * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
      * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
      * navigating to inaccessible pages. Defaults to `false`.
+     * @deprecated This option will default to `true` in the future.
      */
     noWaitAfter?: boolean;
 
@@ -7001,6 +6981,7 @@ export interface Frame {
      * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
      * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
      * navigating to inaccessible pages. Defaults to `false`.
+     * @deprecated This option will default to `true` in the future.
      */
     noWaitAfter?: boolean;
 
@@ -7033,7 +7014,6 @@ export interface Frame {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to click in the center of the
    *    element.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    * 1. Ensure that the element is now checked or unchecked. If not, this method throws.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
@@ -7050,9 +7030,8 @@ export interface Frame {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -7165,9 +7144,8 @@ export interface Frame {
     buffer: Buffer;
   }>, options?: {
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -7197,7 +7175,6 @@ export interface Frame {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.touchscreen](https://playwright.dev/docs/api/class-page#page-touchscreen) to tap the center of the
    *    element, or the specified `position`.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
    * TimeoutError}. Passing zero timeout disables this.
@@ -7221,9 +7198,8 @@ export interface Frame {
     modifiers?: Array<"Alt"|"Control"|"ControlOrMeta"|"Meta"|"Shift">;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -7314,9 +7290,8 @@ export interface Frame {
     delay?: number;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -7348,7 +7323,6 @@ export interface Frame {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to click in the center of the
    *    element.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    * 1. Ensure that the element is now unchecked. If not, this method throws.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
@@ -7364,9 +7338,8 @@ export interface Frame {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -8472,6 +8445,7 @@ export interface BrowserContext {
    * - `'notifications'`
    * - `'payment-handler'`
    * - `'storage-access'`
+   * - `'window-management'`
    * @param options
    */
   grantPermissions(permissions: ReadonlyArray<string>, options?: {
@@ -9713,7 +9687,6 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to click in the center of the
    *    element.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    * 1. Ensure that the element is now checked. If not, this method throws.
    *
    * If the element is detached from the DOM at any moment during the action, this method throws.
@@ -9729,9 +9702,8 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -9809,6 +9781,7 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
      * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
      * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
      * navigating to inaccessible pages. Defaults to `false`.
+     * @deprecated This option will default to `true` in the future.
      */
     noWaitAfter?: boolean;
 
@@ -9851,8 +9824,6 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to double click in the center of the
    *    element, or the specified `position`.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set. Note that if
-   *    the first click of the `dblclick()` triggers a navigation event, this method will throw.
    *
    * If the element is detached from the DOM at any moment during the action, this method throws.
    *
@@ -9886,9 +9857,8 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
     modifiers?: Array<"Alt"|"Control"|"ControlOrMeta"|"Meta"|"Shift">;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -9984,9 +9954,8 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -10026,7 +9995,6 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to hover over the center of the
    *    element, or the specified `position`.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    *
    * If the element is detached from the DOM at any moment during the action, this method throws.
    *
@@ -10048,9 +10016,8 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
     modifiers?: Array<"Alt"|"Control"|"ControlOrMeta"|"Meta"|"Shift">;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -10212,6 +10179,7 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
      * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
      * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
      * navigating to inaccessible pages. Defaults to `false`.
+     * @deprecated This option will default to `true` in the future.
      */
     noWaitAfter?: boolean;
 
@@ -10415,6 +10383,7 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
      * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
      * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
      * navigating to inaccessible pages. Defaults to `false`.
+     * @deprecated This option will default to `true` in the future.
      */
     noWaitAfter?: boolean;
 
@@ -10468,7 +10437,6 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to click in the center of the
    *    element.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    * 1. Ensure that the element is now checked or unchecked. If not, this method throws.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
@@ -10483,9 +10451,8 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -10562,9 +10529,8 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
     buffer: Buffer;
   }>, options?: {
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -10586,7 +10552,6 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.touchscreen](https://playwright.dev/docs/api/class-page#page-touchscreen) to tap the center of the
    *    element, or the specified `position`.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    *
    * If the element is detached from the DOM at any moment during the action, this method throws.
    *
@@ -10610,9 +10575,8 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
     modifiers?: Array<"Alt"|"Control"|"ControlOrMeta"|"Meta"|"Shift">;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -10672,9 +10636,8 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
     delay?: number;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -10698,7 +10661,6 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to click in the center of the
    *    element.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    * 1. Ensure that the element is now unchecked. If not, this method throws.
    *
    * If the element is detached from the DOM at any moment during the action, this method throws.
@@ -10714,9 +10676,8 @@ export interface ElementHandle<T=Node> extends JSHandle<T> {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -11096,7 +11057,6 @@ export interface Locator {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to click in the center of the
    *    element.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    * 1. Ensure that the element is now checked. If not, this method throws.
    *
    * If the element is detached from the DOM at any moment during the action, this method throws.
@@ -11119,9 +11079,8 @@ export interface Locator {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -11178,9 +11137,8 @@ export interface Locator {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -11262,6 +11220,7 @@ export interface Locator {
      * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
      * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
      * navigating to inaccessible pages. Defaults to `false`.
+     * @deprecated This option will default to `true` in the future.
      */
     noWaitAfter?: boolean;
 
@@ -11337,8 +11296,6 @@ export interface Locator {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to double click in the center of the
    *    element, or the specified `position`.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set. Note that if
-   *    the first click of the `dblclick()` triggers a navigation event, this method will throw.
    *
    * If the element is detached from the DOM at any moment during the action, this method throws.
    *
@@ -11372,9 +11329,8 @@ export interface Locator {
     modifiers?: Array<"Alt"|"Control"|"ControlOrMeta"|"Meta"|"Shift">;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -11487,9 +11443,8 @@ export interface Locator {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -11567,9 +11522,8 @@ export interface Locator {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -12024,7 +11978,6 @@ export interface Locator {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to hover over the center of the
    *    element, or the specified `position`.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    *
    * If the element is detached from the DOM at any moment during the action, this method throws.
    *
@@ -12046,9 +11999,8 @@ export interface Locator {
     modifiers?: Array<"Alt"|"Control"|"ControlOrMeta"|"Meta"|"Shift">;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -12433,6 +12385,7 @@ export interface Locator {
      * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
      * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
      * navigating to inaccessible pages. Defaults to `false`.
+     * @deprecated This option will default to `true` in the future.
      */
     noWaitAfter?: boolean;
 
@@ -12481,9 +12434,8 @@ export interface Locator {
     delay?: number;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -12626,6 +12578,7 @@ export interface Locator {
      * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
      * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
      * navigating to inaccessible pages. Defaults to `false`.
+     * @deprecated This option will default to `true` in the future.
      */
     noWaitAfter?: boolean;
 
@@ -12681,7 +12634,6 @@ export interface Locator {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to click in the center of the
    *    element.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    * 1. Ensure that the element is now checked or unchecked. If not, this method throws.
    *
    * When all steps combined have not finished during the specified `timeout`, this method throws a {@link
@@ -12696,9 +12648,8 @@ export interface Locator {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -12801,9 +12752,8 @@ export interface Locator {
     buffer: Buffer;
   }>, options?: {
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -12826,7 +12776,6 @@ export interface Locator {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.touchscreen](https://playwright.dev/docs/api/class-page#page-touchscreen) to tap the center of the
    *    element, or the specified `position`.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    *
    * If the element is detached from the DOM at any moment during the action, this method throws.
    *
@@ -12850,9 +12799,8 @@ export interface Locator {
     modifiers?: Array<"Alt"|"Control"|"ControlOrMeta"|"Meta"|"Shift">;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -12921,9 +12869,8 @@ export interface Locator {
     delay?: number;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -12954,7 +12901,6 @@ export interface Locator {
    * 1. Scroll the element into view if needed.
    * 1. Use [page.mouse](https://playwright.dev/docs/api/class-page#page-mouse) to click in the center of the
    *    element.
-   * 1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
    * 1. Ensure that the element is now unchecked. If not, this method throws.
    *
    * If the element is detached from the DOM at any moment during the action, this method throws.
@@ -12970,9 +12916,8 @@ export interface Locator {
     force?: boolean;
 
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -13220,6 +13165,49 @@ export interface BrowserType<Unused = {}> {
      * Enable Chromium sandboxing. Defaults to `false`.
      */
     chromiumSandbox?: boolean;
+
+    /**
+     * An array of client certificates to be used. Each certificate object must have both `certPath` and `keyPath` or a
+     * single `pfxPath` to load the client certificate. Optionally, `passphrase` property should be provided if the
+     * private key is encrypted. If the certificate is valid only for specific URLs, the `url` property should be provided
+     * with a glob pattern to match the URLs that the certificate is valid for.
+     *
+     * **NOTE** Using Client Certificates in combination with Proxy Servers is not supported.
+     *
+     * **NOTE** When using WebKit on macOS, accessing `localhost` will not pick up client certificates. You can make it
+     * work by replacing `localhost` with `local.playwright`.
+     */
+    clientCertificates?: Array<{
+      /**
+       * Glob pattern to match the URLs that the certificate is valid for.
+       */
+      url: string;
+
+      /**
+       * List of client certificates to be used.
+       */
+      certs: Array<{
+        /**
+         * Path to the file with the certificate in PEM format.
+         */
+        certPath?: string;
+
+        /**
+         * Path to the file with the private key in PEM format.
+         */
+        keyPath?: string;
+
+        /**
+         * Path to the PFX or PKCS12 encoded private key and certificate chain.
+         */
+        pfxPath?: string;
+
+        /**
+         * Passphrase for the private key (PEM or PFX).
+         */
+        passphrase?: string;
+      }>;
+    }>;
 
     /**
      * Emulates `'prefers-colors-scheme'` media feature, supported values are `'light'`, `'dark'`, `'no-preference'`. See
@@ -15591,6 +15579,49 @@ export interface APIRequest {
     baseURL?: string;
 
     /**
+     * An array of client certificates to be used. Each certificate object must have both `certPath` and `keyPath` or a
+     * single `pfxPath` to load the client certificate. Optionally, `passphrase` property should be provided if the
+     * private key is encrypted. If the certificate is valid only for specific URLs, the `url` property should be provided
+     * with a glob pattern to match the URLs that the certificate is valid for.
+     *
+     * **NOTE** Using Client Certificates in combination with Proxy Servers is not supported.
+     *
+     * **NOTE** When using WebKit on macOS, accessing `localhost` will not pick up client certificates. You can make it
+     * work by replacing `localhost` with `local.playwright`.
+     */
+    clientCertificates?: Array<{
+      /**
+       * Glob pattern to match the URLs that the certificate is valid for.
+       */
+      url: string;
+
+      /**
+       * List of client certificates to be used.
+       */
+      certs: Array<{
+        /**
+         * Path to the file with the certificate in PEM format.
+         */
+        certPath?: string;
+
+        /**
+         * Path to the file with the private key in PEM format.
+         */
+        keyPath?: string;
+
+        /**
+         * Path to the PFX or PKCS12 encoded private key and certificate chain.
+         */
+        pfxPath?: string;
+
+        /**
+         * Passphrase for the private key (PEM or PFX).
+         */
+        passphrase?: string;
+      }>;
+    }>;
+
+    /**
      * An object containing additional HTTP headers to be sent with every request. Defaults to none.
      */
     extraHTTPHeaders?: { [key: string]: string; };
@@ -16740,6 +16771,49 @@ export interface Browser extends EventEmitter {
      * Toggles bypassing page's Content-Security-Policy. Defaults to `false`.
      */
     bypassCSP?: boolean;
+
+    /**
+     * An array of client certificates to be used. Each certificate object must have both `certPath` and `keyPath` or a
+     * single `pfxPath` to load the client certificate. Optionally, `passphrase` property should be provided if the
+     * private key is encrypted. If the certificate is valid only for specific URLs, the `url` property should be provided
+     * with a glob pattern to match the URLs that the certificate is valid for.
+     *
+     * **NOTE** Using Client Certificates in combination with Proxy Servers is not supported.
+     *
+     * **NOTE** When using WebKit on macOS, accessing `localhost` will not pick up client certificates. You can make it
+     * work by replacing `localhost` with `local.playwright`.
+     */
+    clientCertificates?: Array<{
+      /**
+       * Glob pattern to match the URLs that the certificate is valid for.
+       */
+      url: string;
+
+      /**
+       * List of client certificates to be used.
+       */
+      certs: Array<{
+        /**
+         * Path to the file with the certificate in PEM format.
+         */
+        certPath?: string;
+
+        /**
+         * Path to the file with the private key in PEM format.
+         */
+        keyPath?: string;
+
+        /**
+         * Path to the PFX or PKCS12 encoded private key and certificate chain.
+         */
+        pfxPath?: string;
+
+        /**
+         * Passphrase for the private key (PEM or PFX).
+         */
+        passphrase?: string;
+      }>;
+    }>;
 
     /**
      * Emulates `'prefers-colors-scheme'` media feature, supported values are `'light'`, `'dark'`, `'no-preference'`. See
@@ -18008,9 +18082,8 @@ export interface FileChooser {
     buffer: Buffer;
   }>, options?: {
     /**
-     * Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
-     * can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
-     * navigating to inaccessible pages. Defaults to `false`.
+     * This option has no effect.
+     * @deprecated This option has no effect.
      */
     noWaitAfter?: boolean;
 
@@ -20172,6 +20245,49 @@ export interface BrowserContextOptions {
    * Toggles bypassing page's Content-Security-Policy. Defaults to `false`.
    */
   bypassCSP?: boolean;
+
+  /**
+   * An array of client certificates to be used. Each certificate object must have both `certPath` and `keyPath` or a
+   * single `pfxPath` to load the client certificate. Optionally, `passphrase` property should be provided if the
+   * private key is encrypted. If the certificate is valid only for specific URLs, the `url` property should be provided
+   * with a glob pattern to match the URLs that the certificate is valid for.
+   *
+   * **NOTE** Using Client Certificates in combination with Proxy Servers is not supported.
+   *
+   * **NOTE** When using WebKit on macOS, accessing `localhost` will not pick up client certificates. You can make it
+   * work by replacing `localhost` with `local.playwright`.
+   */
+  clientCertificates?: Array<{
+    /**
+     * Glob pattern to match the URLs that the certificate is valid for.
+     */
+    url: string;
+
+    /**
+     * List of client certificates to be used.
+     */
+    certs: Array<{
+      /**
+       * Path to the file with the certificate in PEM format.
+       */
+      certPath?: string;
+
+      /**
+       * Path to the file with the private key in PEM format.
+       */
+      keyPath?: string;
+
+      /**
+       * Path to the PFX or PKCS12 encoded private key and certificate chain.
+       */
+      pfxPath?: string;
+
+      /**
+       * Passphrase for the private key (PEM or PFX).
+       */
+      passphrase?: string;
+    }>;
+  }>;
 
   /**
    * Emulates `'prefers-colors-scheme'` media feature, supported values are `'light'`, `'dark'`, `'no-preference'`. See
