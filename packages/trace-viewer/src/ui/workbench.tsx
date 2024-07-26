@@ -36,11 +36,12 @@ import { AttachmentsTab } from './attachmentsTab';
 import type { Boundaries } from '../geometry';
 import { InspectorTab } from './inspectorTab';
 import { ToolbarButton } from '@web/components/toolbarButton';
-import { useSetting, msToString } from '@web/uiUtils';
+import { useSetting, msToString, type Setting } from '@web/uiUtils';
 import type { Entry } from '@trace/har';
 import './workbench.css';
 import { testStatusIcon, testStatusText } from './testUtils';
 import type { UITestStatus } from './testUtils';
+import { SettingsView } from './settingsView';
 
 export const Workbench: React.FunctionComponent<{
   model?: MultiTraceModel,
@@ -52,8 +53,9 @@ export const Workbench: React.FunctionComponent<{
   isLive?: boolean,
   status?: UITestStatus,
   inert?: boolean,
+  showRouteActionsSetting?: Setting<boolean>,
   openPage?: (url: string, target?: string) => Window | any,
-}> = ({ model, showSourcesFirst, rootDir, fallbackLocation, initialSelection, onSelectionChanged, isLive, status, inert, openPage }) => {
+}> = ({ showRouteActionsSetting, model, showSourcesFirst, rootDir, fallbackLocation, initialSelection, onSelectionChanged, isLive, status, inert, openPage }) => {
   const [selectedAction, setSelectedActionImpl] = React.useState<ActionTraceEventInContext | undefined>(undefined);
   const [revealedStack, setRevealedStack] = React.useState<StackFrame[] | undefined>(undefined);
   const [highlightedAction, setHighlightedAction] = React.useState<ActionTraceEventInContext | undefined>();
@@ -66,6 +68,15 @@ export const Workbench: React.FunctionComponent<{
   const activeAction = model ? highlightedAction || selectedAction : undefined;
   const [selectedTime, setSelectedTime] = React.useState<Boundaries | undefined>();
   const [sidebarLocation, setSidebarLocation] = useSetting<'bottom' | 'right'>('propertiesSidebarLocation', 'bottom');
+  const [, , showRouteActionsSettingInternal] = useSetting(showRouteActionsSetting ? undefined : 'show-route-actions', true, 'Show route actions');
+
+  const showSettings = !showRouteActionsSetting;
+  showRouteActionsSetting ||= showRouteActionsSettingInternal;
+  const showRouteActions = showRouteActionsSetting[0];
+
+  const filteredActions = React.useMemo(() => {
+    return (model?.actions || []).filter(action => showRouteActions || action.class !== 'Route');
+  }, [model, showRouteActions]);
 
   const setSelectedAction = React.useCallback((action: ActionTraceEventInContext | undefined) => {
     setSelectedActionImpl(action);
@@ -223,6 +234,40 @@ export const Workbench: React.FunctionComponent<{
   else if (model && model.wallTime)
     time = Date.now() - model.wallTime;
 
+  const actionsTab: TabbedPaneTabModel = {
+    id: 'actions',
+    title: 'Actions',
+    component: <div className='vbox'>
+      {status && <div className='workbench-run-status'>
+        <span className={`codicon ${testStatusIcon(status)}`}></span>
+        <div>{testStatusText(status)}</div>
+        <div className='spacer'></div>
+        <div className='workbench-run-duration'>{time ? msToString(time) : ''}</div>
+      </div>}
+      <ActionList
+        sdkLanguage={sdkLanguage}
+        actions={filteredActions}
+        selectedAction={model ? selectedAction : undefined}
+        selectedTime={selectedTime}
+        setSelectedTime={setSelectedTime}
+        onSelected={onActionSelected}
+        onHighlighted={setHighlightedAction}
+        revealConsole={() => selectPropertiesTab('console')}
+        isLive={isLive}
+      />
+    </div>
+  };
+  const metadataTab: TabbedPaneTabModel = {
+    id: 'metadata',
+    title: 'Metadata',
+    component: <MetadataView model={model}/>
+  };
+  const settingsTab: TabbedPaneTabModel = {
+    id: 'settings',
+    title: 'Settings',
+    component: <SettingsView settings={[showRouteActionsSetting]}/>,
+  };
+
   return <div className='vbox workbench' {...(inert ? { inert: 'true' } : {})}>
     <Timeline
       model={model}
@@ -248,37 +293,10 @@ export const Workbench: React.FunctionComponent<{
           setHighlightedLocator={locatorPicked}
           openPage={openPage} />
         <TabbedPane
-          tabs={[
-            {
-              id: 'actions',
-              title: 'Actions',
-              component: <div className='vbox'>
-                {status && <div className='workbench-run-status'>
-                  <span className={`codicon ${testStatusIcon(status)}`}></span>
-                  <div>{testStatusText(status)}</div>
-                  <div className='spacer'></div>
-                  <div className='workbench-run-duration'>{time ? msToString(time) : ''}</div>
-                </div>}
-                <ActionList
-                  sdkLanguage={sdkLanguage}
-                  actions={model?.actions || []}
-                  selectedAction={model ? selectedAction : undefined}
-                  selectedTime={selectedTime}
-                  setSelectedTime={setSelectedTime}
-                  onSelected={onActionSelected}
-                  onHighlighted={setHighlightedAction}
-                  revealConsole={() => selectPropertiesTab('console')}
-                  isLive={isLive}
-                />
-              </div>
-            },
-            {
-              id: 'metadata',
-              title: 'Metadata',
-              component: <MetadataView model={model}/>
-            },
-          ]}
-          selectedTab={selectedNavigatorTab} setSelectedTab={setSelectedNavigatorTab}/>
+          tabs={showSettings ? [actionsTab, metadataTab, settingsTab] : [actionsTab, metadataTab]}
+          selectedTab={selectedNavigatorTab}
+          setSelectedTab={setSelectedNavigatorTab}
+        />
       </SplitView>
       <TabbedPane
         tabs={tabs}

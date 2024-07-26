@@ -31,7 +31,9 @@ test.slow();
 let traceFile: string;
 
 test.beforeAll(async function recordTrace({ browser, browserName, browserType, server }, workerInfo) {
-  const context = await browser.newContext();
+  const context = await browser.newContext({
+    baseURL: 'https://example.com',
+  });
   await context.tracing.start({ name: 'test', screenshots: true, snapshots: true, sources: true });
   const page = await context.newPage();
   await page.goto(`data:text/html,<!DOCTYPE html><html>Hello world</html>`);
@@ -118,6 +120,11 @@ test('should open simple trace viewer', async ({ showTraceViewer }) => {
     /page.gotohttp:\/\/localhost:\d+\/frames\/frame.html/,
     /page.setViewportSize/,
   ]);
+});
+
+test('should complain about newer version of trace in old viewer', async ({ showTraceViewer, asset }, testInfo) => {
+  const traceViewer = await showTraceViewer([asset('trace-from-the-future.zip')]);
+  await expect(traceViewer.page.getByText('The trace was created by a newer version of Playwright and is not supported by this version of the viewer.')).toBeVisible();
 });
 
 test('should contain action info', async ({ showTraceViewer }) => {
@@ -1282,6 +1289,17 @@ test('should open snapshot in new browser context', async ({ browser, page, runA
   await newPage.close();
 });
 
+test('should show similar actions from library-only trace', async ({ showTraceViewer, asset }) => {
+  const traceViewer = await showTraceViewer([asset('trace-library-1.46.zip')]);
+  await expect(traceViewer.actionTitles).toHaveText([
+    /page.setContent/,
+    /locator.getAttributelocator\('div'\)/,
+    /locator.isVisiblelocator\('div'\)/,
+    /locator.getAttributelocator\('div'\)/,
+    /locator.isVisiblelocator\('div'\)/,
+  ]);
+});
+
 function parseMillis(s: string): number {
   const matchMs = s.match(/(\d+)ms/);
   if (matchMs)
@@ -1315,4 +1333,49 @@ test('should show correct request start time', {
   const duration =  await line.locator('.grid-view-column-duration').textContent();
   expect(parseMillis(duration)).toBeGreaterThan(1000);
   expect(parseMillis(start)).toBeLessThan(1000);
+});
+
+test('should allow hiding route actions', {
+  annotation: { type: 'issue', description: 'https://github.com/microsoft/playwright/issues/30970' },
+}, async ({ page, runAndTrace, server }) => {
+  const traceViewer = await runAndTrace(async () => {
+    await page.route('**/*', async route => {
+      await route.fulfill({ contentType: 'text/html', body: 'Yo, page!' });
+    });
+    await page.goto(server.EMPTY_PAGE);
+  });
+
+  // Routes are visible by default.
+  await expect(traceViewer.actionTitles).toHaveText([
+    /page.route/,
+    /page.goto.*empty.html/,
+    /route.fulfill/,
+  ]);
+
+  await traceViewer.page.getByText('Settings').click();
+  await expect(traceViewer.page.getByRole('checkbox', { name: 'Show route actions' })).toBeChecked();
+  await traceViewer.page.getByRole('checkbox', { name: 'Show route actions' }).uncheck();
+  await traceViewer.page.getByText('Actions', { exact: true }).click();
+  await expect(traceViewer.actionTitles).toHaveText([
+    /page.route/,
+    /page.goto.*empty.html/,
+  ]);
+
+  await traceViewer.page.getByText('Settings').click();
+  await traceViewer.page.getByRole('checkbox', { name: 'Show route actions' }).check();
+  await traceViewer.page.getByText('Actions', { exact: true }).click();
+  await expect(traceViewer.actionTitles).toHaveText([
+    /page.route/,
+    /page.goto.*empty.html/,
+    /route.fulfill/,
+  ]);
+});
+
+test('should show baseURL in metadata pane', {
+  annotation: { type: 'issue', description: 'https://github.com/microsoft/playwright/issues/31847' },
+}, async ({ showTraceViewer }) => {
+  const traceViewer = await showTraceViewer([traceFile]);
+  await traceViewer.selectAction('page.evaluate');
+  await traceViewer.showMetadataTab();
+  await expect(traceViewer.metadataTab).toContainText('baseURL:https://example.com');
 });

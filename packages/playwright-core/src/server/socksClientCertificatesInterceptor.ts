@@ -14,26 +14,61 @@
  * limitations under the License.
  */
 
-import type net from 'net';
+import net from 'net';
 import path from 'path';
+import http2 from 'http2';
 import type https from 'https';
 import fs from 'fs';
 import tls from 'tls';
 import stream from 'stream';
-import { createSocket } from '../utils/happy-eyeballs';
-import { globToRegex, isUnderTest } from '../utils';
+import { createSocket, createTLSSocket } from '../utils/happy-eyeballs';
+import { isUnderTest, ManualPromise } from '../utils';
 import type { SocksSocketClosedPayload, SocksSocketDataPayload, SocksSocketRequestedPayload } from '../common/socksProxy';
 import { SocksProxy } from '../common/socksProxy';
 import type * as channels from '@protocol/channels';
+import { debugLogger } from '../utils/debugLogger';
 
-class SocksConnectionDuplex extends stream.Duplex {
-  constructor(private readonly writeCallback: (data: Buffer) => void) {
-    super();
-  }
-  override _read(): void { }
-  override _write(chunk: Buffer, encoding: BufferEncoding, callback: (error?: Error | null | undefined) => void): void {
-    this.writeCallback(chunk);
-    callback();
+let dummyServerTlsOptions: tls.TlsOptions | undefined = undefined;
+function loadDummyServerCertsIfNeeded() {
+  if (dummyServerTlsOptions)
+    return;
+  dummyServerTlsOptions = {
+    key: fs.readFileSync(path.join(__dirname, '../../bin/socks-certs/key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, '../../bin/socks-certs/cert.pem')),
+  };
+}
+
+class ALPNCache {
+  private _cache = new Map<string, ManualPromise<string>>();
+
+  get(host: string, port: number, success: (protocol: string) => void) {
+    const cacheKey = `${host}:${port}`;
+    {
+      const result = this._cache.get(cacheKey);
+      if (result) {
+        result.then(success);
+        return;
+      }
+    }
+    const result = new ManualPromise<string>();
+    this._cache.set(cacheKey, result);
+    result.then(success);
+    createTLSSocket({
+      host,
+      port,
+      servername: net.isIP(host) ? undefined : host,
+      ALPNProtocols: ['h2', 'http/1.1'],
+      rejectUnauthorized: false,
+    }).then(socket => {
+      socket.on('secureConnect', () => {
+        // The server may not respond with ALPN, in which case we default to http/1.1.
+        result.resolve(socket.alpnProtocol || 'http/1.1');
+        socket.end();
+      });
+    }).catch(error => {
+      debugLogger.log('client-certificates', `ALPN error: ${error.message}`);
+      result.resolve('http/1.1');
+    });
   }
 }
 
@@ -46,18 +81,19 @@ class SocksProxyConnection {
   target!: net.Socket;
   // In case of http, we just pipe data to the target socket and they are |undefined|.
   internal: stream.Duplex | undefined;
-  internalTLS: tls.TLSSocket | undefined;
+  private _targetCloseEventListener: () => void;
 
   constructor(socksProxy: ClientCertificatesProxy, uid: string, host: string, port: number) {
     this.socksProxy = socksProxy;
     this.uid = uid;
     this.host = host;
     this.port = port;
+    this._targetCloseEventListener = () => this.socksProxy._socksProxy.sendSocketEnd({ uid: this.uid });
   }
 
   async connect() {
-    this.target = await createSocket(this.host === 'local.playwright' ? 'localhost' : this.host, this.port);
-    this.target.on('close', () => this.socksProxy._socksProxy.sendSocketEnd({ uid: this.uid }));
+    this.target = await createSocket(rewriteToLocalhostIfNeeded(this.host), this.port);
+    this.target.on('close', this._targetCloseEventListener);
     this.target.on('error', error => this.socksProxy._socksProxy.sendSocketError({ uid: this.uid, error: error.message }));
     this.socksProxy._socksProxy.socketConnected({
       uid: this.uid,
@@ -89,47 +125,89 @@ class SocksProxyConnection {
   }
 
   private _attachTLSListeners() {
-    this.internal = new SocksConnectionDuplex(data => this.socksProxy._socksProxy.sendSocketData({ uid: this.uid, data }));
-    const internalTLS = new tls.TLSSocket(this.internal, {
-      isServer: true,
-      key: fs.readFileSync(path.join(__dirname, '../../bin/socks-certs/key.pem')),
-      cert: fs.readFileSync(path.join(__dirname, '../../bin/socks-certs/cert.pem')),
+    this.internal = new stream.Duplex({
+      read: () => {},
+      write: (data, encoding, callback) => {
+        this.socksProxy._socksProxy.sendSocketData({ uid: this.uid, data });
+        callback();
+      }
     });
-    this.internalTLS = internalTLS;
-    internalTLS.on('close', () => this.socksProxy._socksProxy.sendSocketEnd({ uid: this.uid }));
+    this.socksProxy.alpnCache.get(rewriteToLocalhostIfNeeded(this.host), this.port, alpnProtocolChosenByServer => {
+      debugLogger.log('client-certificates', `Proxy->Target ${this.host}:${this.port} chooses ALPN ${alpnProtocolChosenByServer}`);
+      const dummyServer = tls.createServer({
+        ...dummyServerTlsOptions,
+        ALPNProtocols: alpnProtocolChosenByServer === 'h2' ? ['h2', 'http/1.1'] : ['http/1.1'],
+      });
+      this.internal?.on('close', () => dummyServer.close());
+      dummyServer.emit('connection', this.internal);
+      dummyServer.on('secureConnection', internalTLS => {
+        debugLogger.log('client-certificates', `Browser->Proxy ${this.host}:${this.port} chooses ALPN ${internalTLS.alpnProtocol}`);
+        const tlsOptions: tls.ConnectionOptions = {
+          socket: this.target,
+          host: this.host,
+          port: this.port,
+          rejectUnauthorized: !this.socksProxy.ignoreHTTPSErrors,
+          ALPNProtocols: [internalTLS.alpnProtocol || 'http/1.1'],
+          ...clientCertificatesToTLSOptions(this.socksProxy.clientCertificates, `https://${this.host}:${this.port}`),
+        };
+        if (!net.isIP(this.host))
+          tlsOptions.servername = this.host;
+        if (process.env.PWTEST_UNSUPPORTED_CUSTOM_CA && isUnderTest())
+          tlsOptions.ca = [fs.readFileSync(process.env.PWTEST_UNSUPPORTED_CUSTOM_CA)];
+        const targetTLS = tls.connect(tlsOptions);
 
-    const tlsOptions: tls.ConnectionOptions = {
-      socket: this.target,
-      rejectUnauthorized: !this.socksProxy.ignoreHTTPSErrors,
-      ...clientCertificatesToTLSOptions(this.socksProxy.clientCertificates, `https://${this.host}:${this.port}/`),
-    };
-    if (process.env.PWTEST_UNSUPPORTED_CUSTOM_CA && isUnderTest())
-      tlsOptions.ca = [fs.readFileSync(process.env.PWTEST_UNSUPPORTED_CUSTOM_CA)];
-    const targetTLS = tls.connect(tlsOptions);
+        targetTLS.on('secureConnect', () => {
+          internalTLS.pipe(targetTLS);
+          targetTLS.pipe(internalTLS);
+        });
 
-    internalTLS.pipe(targetTLS);
-    targetTLS.pipe(internalTLS);
+        // Handle close and errors
+        const closeBothSockets = () => {
+          internalTLS.end();
+          targetTLS.end();
+        };
 
-    // Handle close and errors
-    const closeBothSockets = () => {
-      internalTLS.end();
-      targetTLS.end();
-    };
+        internalTLS.on('end', () => closeBothSockets());
+        targetTLS.on('end', () => closeBothSockets());
 
-    internalTLS.on('end', () => closeBothSockets());
-    targetTLS.on('end', () => closeBothSockets());
-
-    internalTLS.on('error', () => closeBothSockets());
-    targetTLS.on('error', error => {
-      const responseBody = 'Playwright client-certificate error: ' + error.message;
-      internalTLS.end([
-        'HTTP/1.1 503 Internal Server Error',
-        'Content-Type: text/html; charset=utf-8',
-        'Content-Length: ' + Buffer.byteLength(responseBody),
-        '\r\n',
-        responseBody,
-      ].join('\r\n'));
-      closeBothSockets();
+        internalTLS.on('error', () => closeBothSockets());
+        targetTLS.on('error', error => {
+          debugLogger.log('client-certificates', `error when connecting to target: ${error.message}`);
+          const responseBody = 'Playwright client-certificate error: ' + error.message;
+          if (internalTLS?.alpnProtocol === 'h2') {
+            // This method is available only in Node.js 20+
+            if ('performServerHandshake' in http2) {
+              // In case of an 'error' event on the target connection, we still need to perform the http2 handshake on the browser side.
+              // This is an async operation, so we need to intercept the close event to prevent the socket from being closed too early.
+              this.target.removeListener('close', this._targetCloseEventListener);
+              // @ts-expect-error
+              const session: http2.ServerHttp2Session = http2.performServerHandshake(internalTLS);
+              session.on('stream', (stream: http2.ServerHttp2Stream) => {
+                stream.respond({
+                  'content-type': 'text/html',
+                  [http2.constants.HTTP2_HEADER_STATUS]: 503,
+                });
+                stream.end(responseBody, () => {
+                  session.close();
+                  closeBothSockets();
+                });
+                stream.on('error', () => closeBothSockets());
+              });
+            } else {
+              closeBothSockets();
+            }
+          } else {
+            internalTLS.end([
+              'HTTP/1.1 503 Internal Server Error',
+              'Content-Type: text/html; charset=utf-8',
+              'Content-Length: ' + Buffer.byteLength(responseBody),
+              '\r\n',
+              responseBody,
+            ].join('\r\n'));
+            closeBothSockets();
+          }
+        });
+      });
     });
   }
 }
@@ -139,10 +217,12 @@ export class ClientCertificatesProxy {
   private _connections: Map<string, SocksProxyConnection> = new Map();
   ignoreHTTPSErrors: boolean | undefined;
   clientCertificates: channels.BrowserNewContextOptions['clientCertificates'];
+  alpnCache: ALPNCache;
 
   constructor(
     contextOptions: Pick<channels.BrowserNewContextOptions, 'clientCertificates' | 'ignoreHTTPSErrors'>
   ) {
+    this.alpnCache = new ALPNCache();
     this.ignoreHTTPSErrors = contextOptions.ignoreHTTPSErrors;
     this.clientCertificates = contextOptions.clientCertificates;
     this._socksProxy = new SocksProxy();
@@ -163,6 +243,7 @@ export class ClientCertificatesProxy {
       this._connections.get(payload.uid)?.onClose();
       this._connections.delete(payload.uid);
     });
+    loadDummyServerCertsIfNeeded();
   }
 
   public async listen(): Promise<string> {
@@ -175,20 +256,16 @@ export class ClientCertificatesProxy {
   }
 }
 
-const kClientCertificatesGlobRegex = Symbol('kClientCertificatesGlobRegex');
-
 export function clientCertificatesToTLSOptions(
   clientCertificates: channels.BrowserNewContextOptions['clientCertificates'],
-  requestURL: string
+  origin: string
 ): Pick<https.RequestOptions, 'pfx' | 'key' | 'cert'> | undefined {
   const matchingCerts = clientCertificates?.filter(c => {
-    let regex: RegExp | undefined = (c as any)[kClientCertificatesGlobRegex];
-    if (!regex) {
-      regex = globToRegex(c.url);
-      (c as any)[kClientCertificatesGlobRegex] = regex;
+    try {
+      return new URL(c.origin).origin === origin;
+    } catch (error) {
+      return c.origin === origin;
     }
-    regex.lastIndex = 0;
-    return regex.test(requestURL);
   });
   if (!matchingCerts || !matchingCerts.length)
     return;
@@ -197,15 +274,17 @@ export function clientCertificatesToTLSOptions(
     key: [] as { pem: Buffer, passphrase?: string }[],
     cert: [] as Buffer[],
   };
-  for (const { certs } of matchingCerts) {
-    for (const cert of certs) {
-      if (cert.cert)
-        tlsOptions.cert.push(cert.cert);
-      if (cert.key)
-        tlsOptions.key.push({ pem: cert.key, passphrase: cert.passphrase });
-      if (cert.pfx)
-        tlsOptions.pfx.push({ buf: cert.pfx, passphrase: cert.passphrase });
-    }
+  for (const cert of matchingCerts) {
+    if (cert.cert)
+      tlsOptions.cert.push(cert.cert);
+    if (cert.key)
+      tlsOptions.key.push({ pem: cert.key, passphrase: cert.passphrase });
+    if (cert.pfx)
+      tlsOptions.pfx.push({ buf: cert.pfx, passphrase: cert.passphrase });
   }
   return tlsOptions;
+}
+
+function rewriteToLocalhostIfNeeded(host: string): string {
+  return host === 'local.playwright' ? 'localhost' : host;
 }
