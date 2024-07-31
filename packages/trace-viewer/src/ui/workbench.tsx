@@ -36,7 +36,7 @@ import { AttachmentsTab } from './attachmentsTab';
 import type { Boundaries } from '../geometry';
 import { InspectorTab } from './inspectorTab';
 import { ToolbarButton } from '@web/components/toolbarButton';
-import { useSetting, msToString, type Setting } from '@web/uiUtils';
+import { useSetting, msToString, clsx } from '@web/uiUtils';
 import type { Entry } from '@trace/har';
 import './workbench.css';
 import { testStatusIcon, testStatusText } from './testUtils';
@@ -53,9 +53,11 @@ export const Workbench: React.FunctionComponent<{
   isLive?: boolean,
   status?: UITestStatus,
   inert?: boolean,
-  showRouteActionsSetting?: Setting<boolean>,
   openPage?: (url: string, target?: string) => Window | any,
-}> = ({ showRouteActionsSetting, model, showSourcesFirst, rootDir, fallbackLocation, initialSelection, onSelectionChanged, isLive, status, inert, openPage }) => {
+  onOpenExternally?: (location: modelUtil.SourceLocation) => void,
+  revealSource?: boolean,
+  showSettings?: boolean,
+}> = ({ model, showSourcesFirst, rootDir, fallbackLocation, initialSelection, onSelectionChanged, isLive, status, inert, openPage, onOpenExternally, revealSource, showSettings }) => {
   const [selectedAction, setSelectedActionImpl] = React.useState<ActionTraceEventInContext | undefined>(undefined);
   const [revealedStack, setRevealedStack] = React.useState<StackFrame[] | undefined>(undefined);
   const [highlightedAction, setHighlightedAction] = React.useState<ActionTraceEventInContext | undefined>();
@@ -63,16 +65,12 @@ export const Workbench: React.FunctionComponent<{
   const [highlightedConsoleMessage, setHighlightedConsoleMessage] = React.useState<ConsoleEntry | undefined>();
   const [selectedNavigatorTab, setSelectedNavigatorTab] = React.useState<string>('actions');
   const [selectedPropertiesTab, setSelectedPropertiesTab] = useSetting<string>('propertiesTab', showSourcesFirst ? 'source' : 'call');
-  const [isInspecting, setIsInspecting] = React.useState(false);
+  const [isInspecting, setIsInspectingState] = React.useState(false);
   const [highlightedLocator, setHighlightedLocator] = React.useState<string>('');
   const activeAction = model ? highlightedAction || selectedAction : undefined;
   const [selectedTime, setSelectedTime] = React.useState<Boundaries | undefined>();
   const [sidebarLocation, setSidebarLocation] = useSetting<'bottom' | 'right'>('propertiesSidebarLocation', 'bottom');
-  const [, , showRouteActionsSettingInternal] = useSetting(showRouteActionsSetting ? undefined : 'show-route-actions', true, 'Show route actions');
-
-  const showSettings = !showRouteActionsSetting;
-  showRouteActionsSetting ||= showRouteActionsSettingInternal;
-  const showRouteActions = showRouteActionsSetting[0];
+  const [showRouteActions, , showRouteActionsSetting] = useSetting('show-route-actions', true, 'Show route actions');
 
   const filteredActions = React.useMemo(() => {
     return (model?.actions || []).filter(action => showRouteActions || action.class !== 'Route');
@@ -87,6 +85,7 @@ export const Workbench: React.FunctionComponent<{
 
   React.useEffect(() => {
     setSelectedTime(undefined);
+    setRevealedStack(undefined);
   }, [model]);
 
   React.useEffect(() => {
@@ -118,13 +117,24 @@ export const Workbench: React.FunctionComponent<{
   const selectPropertiesTab = React.useCallback((tab: string) => {
     setSelectedPropertiesTab(tab);
     if (tab !== 'inspector')
-      setIsInspecting(false);
+      setIsInspectingState(false);
   }, [setSelectedPropertiesTab]);
+
+  const setIsInspecting = React.useCallback((value: boolean) => {
+    if (!isInspecting && value)
+      selectPropertiesTab('inspector');
+    setIsInspectingState(value);
+  }, [setIsInspectingState, selectPropertiesTab, isInspecting]);
 
   const locatorPicked = React.useCallback((locator: string) => {
     setHighlightedLocator(locator);
     selectPropertiesTab('inspector');
   }, [selectPropertiesTab]);
+
+  React.useEffect(() => {
+    if (revealSource)
+      selectPropertiesTab('source');
+  }, [revealSource, selectPropertiesTab]);
 
   const consoleModel = useConsoleTabModel(model, selectedTime);
   const networkModel = useNetworkTabModel(model, selectedTime);
@@ -174,7 +184,9 @@ export const Workbench: React.FunctionComponent<{
       sources={sources}
       rootDir={rootDir}
       stackFrameLocation={sidebarLocation === 'bottom' ? 'right' : 'bottom'}
-      fallbackLocation={fallbackLocation} />
+      fallbackLocation={fallbackLocation}
+      onOpenExternally={onOpenExternally}
+    />
   };
   const consoleTab: TabbedPaneTabModel = {
     id: 'console',
@@ -239,7 +251,7 @@ export const Workbench: React.FunctionComponent<{
     title: 'Actions',
     component: <div className='vbox'>
       {status && <div className='workbench-run-status'>
-        <span className={`codicon ${testStatusIcon(status)}`}></span>
+        <span className={clsx('codicon', testStatusIcon(status))}></span>
         <div>{testStatusText(status)}</div>
         <div className='spacer'></div>
         <div className='workbench-run-duration'>{time ? msToString(time) : ''}</div>
@@ -281,9 +293,15 @@ export const Workbench: React.FunctionComponent<{
       selectedTime={selectedTime}
       setSelectedTime={setSelectedTime}
     />
-    <SplitView sidebarSize={250} orientation={sidebarLocation === 'bottom' ? 'vertical' : 'horizontal'} settingName='propertiesSidebar'>
-      <SplitView sidebarSize={250} orientation='horizontal' sidebarIsFirst={true} settingName='actionListSidebar'>
-        <SnapshotTab
+    <SplitView
+      sidebarSize={250}
+      orientation={sidebarLocation === 'bottom' ? 'vertical' : 'horizontal'} settingName='propertiesSidebar'
+      main={<SplitView
+        sidebarSize={250}
+        orientation='horizontal'
+        sidebarIsFirst
+        settingName='actionListSidebar'
+        main={<SnapshotTab
           action={activeAction}
           sdkLanguage={sdkLanguage}
           testIdAttributeName={model?.testIdAttributeName || 'data-testid'}
@@ -291,24 +309,19 @@ export const Workbench: React.FunctionComponent<{
           setIsInspecting={setIsInspecting}
           highlightedLocator={highlightedLocator}
           setHighlightedLocator={locatorPicked}
-          openPage={openPage} />
-        <TabbedPane
-          tabs={showSettings ? [actionsTab, metadataTab, settingsTab] : [actionsTab, metadataTab]}
-          selectedTab={selectedNavigatorTab}
-          setSelectedTab={setSelectedNavigatorTab}
-        />
-      </SplitView>
-      <TabbedPane
+          openPage={openPage} />}
+        sidebar={
+          <TabbedPane
+            tabs={showSettings ? [actionsTab, metadataTab, settingsTab] : [actionsTab, metadataTab]}
+            selectedTab={selectedNavigatorTab}
+            setSelectedTab={setSelectedNavigatorTab}
+          />
+        }
+      />}
+      sidebar={<TabbedPane
         tabs={tabs}
         selectedTab={selectedPropertiesTab}
         setSelectedTab={selectPropertiesTab}
-        leftToolbar={[
-          <ToolbarButton title='Pick locator' icon='target' toggled={isInspecting} onClick={() => {
-            if (!isInspecting)
-              selectPropertiesTab('inspector');
-            setIsInspecting(!isInspecting);
-          }} />
-        ]}
         rightToolbar={[
           sidebarLocation === 'bottom' ?
             <ToolbarButton title='Dock to right' icon='layout-sidebar-right-off' onClick={() => {
@@ -319,7 +332,7 @@ export const Workbench: React.FunctionComponent<{
             }} />
         ]}
         mode={sidebarLocation === 'bottom' ? 'default' : 'select'}
-      />
-    </SplitView>
+      />}
+    />
   </div>;
 };
