@@ -291,13 +291,13 @@ test('should show snapshot URL', async ({ page, runAndTrace, server }) => {
 test('should popup snapshot', async ({ page, runAndTrace, server }) => {
   const traceViewer = await runAndTrace(async () => {
     await page.goto(server.EMPTY_PAGE);
-    await page.setContent('hello');
+    await page.setContent('hello äöü 🙂');
   });
   await traceViewer.snapshotFrame('page.setContent');
   const popupPromise = traceViewer.page.context().waitForEvent('page');
   await traceViewer.page.getByTitle('Open snapshot in a new tab').click();
   const popup = await popupPromise;
-  await expect(popup.getByText('hello')).toBeVisible();
+  await expect(popup.getByText('hello äöü 🙂')).toBeVisible();
 });
 
 test('should capture iframe with sandbox attribute', async ({ page, server, runAndTrace }) => {
@@ -1357,7 +1357,6 @@ test('should allow hiding route actions', {
   await traceViewer.page.getByRole('checkbox', { name: 'Show route actions' }).uncheck();
   await traceViewer.page.getByText('Actions', { exact: true }).click();
   await expect(traceViewer.actionTitles).toHaveText([
-    /page.route/,
     /page.goto.*empty.html/,
   ]);
 
